@@ -56,16 +56,32 @@ Source Limit:
     #Use input() to read input from STDIN and use print to write your output to STDOUT
     
 def find_max_sum_at_each_house(no_of_houses, tickets):
-    sum_list = [0] * no_of_houses
-    winners_list = [[]] * no_of_houses
+    sum_list = {}
+    winners_list = {}
 
     # Start at the tail of the list
     # Work your way till the head finding the max sum for each house
     for house_number in range(no_of_houses-1, -1, -1):
+        # Remove the sum and list calculated for houses not in the vicinity
+        # i.e. more than two house distance apart
+        
+        #str_house_number_plus_3 = str(house_number + 3)
+        str_house_number_plus_3 = house_number + 3
+        sum_list.pop(str_house_number_plus_3, None)
+        winners_list.pop(str_house_number_plus_3, None)
+        
+        #str_house_number_plus_2 = str(house_number + 2)
+        #str_house_number_plus_1 = str(house_number + 1)
+        #str_house_number = str(house_number)
+        
+        str_house_number_plus_2 = house_number + 2
+        str_house_number_plus_1 = house_number + 1
+        str_house_number = house_number
+        
         include_add = 0
         if house_number + 2 < no_of_houses:
             # Get the max ticket sum for the closest non-neighbour
-            include_add = sum_list[house_number+2]
+            include_add = sum_list[str_house_number_plus_2]
         
         # Get the sum of ticket numbers if 
         # we include the current house to the 
@@ -75,58 +91,59 @@ def find_max_sum_at_each_house(no_of_houses, tickets):
         exclude = 0
         if house_number + 1 < no_of_houses:
             # Get the max ticket sum of the neighbour
-            exclude = sum_list[house_number+1]
+            exclude = sum_list[str_house_number_plus_1]
             
         if include > exclude:
             # Ticket sum of the closest non-neighbour is higher
             # than the ticket sum of the neighbour
-            sum_list[house_number] = include
-            winners_list[house_number] = []
+            sum_list[str_house_number] = include
+            winners_list[str_house_number] = []
             
             # Add the current house number to the winners list
             if house_number + 2 < no_of_houses:
-                winners_list[house_number] = list(winners_list[house_number+2])
-            winners_list[house_number].append(house_number)
+                winners_list[str_house_number] = list(winners_list[str_house_number_plus_2])
+            winners_list[str_house_number].append(house_number)
         elif include < exclude:
             # Ticket sum of the closest non-neighbour is lower
             # than the ticket sum of the neighbour
-            sum_list[house_number] = exclude 
-            winners_list[house_number] = []
+            sum_list[str_house_number] = exclude 
+            winners_list[str_house_number] = []
             
             # Do not include the current house in the winners list
             # Assign the winners list of the neighbour to the current house
             if house_number + 1 < no_of_houses:
-                winners_list[house_number] = list(winners_list[house_number+1])
+                winners_list[str_house_number] = list(winners_list[str_house_number_plus_1])
         else:
             # Ticket sum of the closest non-neighbour is equal to
             # the ticket sum of the neighbour
             
             # Choose the list which starts with the highest ticket number
             # Assign the chosen winners list to the current house
-            sum_list[house_number] = include
+            sum_list[str_house_number] = include
             include_max_sum_list = []
             if house_number + 2 < no_of_houses:
-                include_max_sum_list = list(winners_list[house_number+2])
+                include_max_sum_list = list(winners_list[str_house_number_plus_2])
             include_max_sum_list.append(house_number)
             neighbor_max_sum_list = []
             if house_number + 1 < no_of_houses:
-                neighbor_max_sum_list = list(winners_list[house_number+1])
+                neighbor_max_sum_list = list(winners_list[str_house_number_plus_1])
                 
             shortest_list_length = len(include_max_sum_list) if len(include_max_sum_list) < len(neighbor_max_sum_list) else len(neighbor_max_sum_list)
             for index in range(0, shortest_list_length):
                 if tickets[include_max_sum_list[index]] > tickets[neighbor_max_sum_list[index]]:
-                    winners_list[house_number] = list(include_max_sum_list)
+                    winners_list[str_house_number] = list(include_max_sum_list)
                     break
                 if tickets[include_max_sum_list[index]] < tickets[neighbor_max_sum_list[index]]:
-                    winners_list[house_number] = list(neighbor_max_sum_list)
+                    winners_list[str_house_number] = list(neighbor_max_sum_list)
                     break
             else:
                 if shortest_list_length == len(include_max_sum_list):
-                    winners_list[house_number] = list(include_max_sum_list)
+                    winners_list[str_house_number] = list(include_max_sum_list)
                 
                 if shortest_list_length == len(neighbor_max_sum_list):
-                    winners_list[house_number] = list(neighbor_max_sum_list)
+                    winners_list[str_house_number] = list(neighbor_max_sum_list)
                 
+    #return (sum_list['0'], winners_list['0'])
     return (sum_list[0], winners_list[0])
     
     
